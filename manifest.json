@@ -1,0 +1,20 @@
+{
+  "name": "IMDBechdelTest",
+  "version": "1.0",
+  "description": "Adds Bechdel Test results to an IMDB page.",
+  "permissions":  [
+    "http://www.imdb.com/title/*",
+    "https://www.imdb.com/title/*",
+    "http://bechdeltest.com/api/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://www.imdb.com/title/*"],
+      "js": ["bechdel_test.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    "images/*"
+  ],
+  "manifest_version": 2
+}
