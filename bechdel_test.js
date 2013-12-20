@@ -28,7 +28,7 @@ function parseAndDisplayResult(responseText){
   // Check for Error Cases
   if (bechdelTestResults['status'] == "403") {
     // 403  This movie has not had an approved rating yet.
-  } else if (bechdelTestResults['status'] == "403") {
+  } else if (bechdelTestResults['status'] == "404") {
     // 404  This movie has not been rated yet.
   }
 
