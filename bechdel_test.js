@@ -1,48 +1,67 @@
-// Error codes
-
 
 function tooltipText(results) {
   text = "";
   rating = results['rating'];
-
-  if(rating == "3"){
-    text = "Includes at least two named women talking about somthing other than a man.";
+	status = results['status'];
+	if(status == "403"){
+		// 403  This movie has not had an approved rating yet.
+		text = "Rating is pending approval.";
+		return(text);
+	} else if(status == "404"){
+		// 404  This movie has not been rated yet.
+		text = "This movie has not been rated.";
+		return(text);
+	}
+	else{
+  	if(rating == "3"){
+  	  text = "Includes at least two named women talking about somthing other than a man.";
+  	}
+  	else if(rating == "2"){
+  	  text = "Includes at least two named women talking about a man.";
+  	}
+  	else if(rating == "1"){
+  	  text = "Includes at least two named women.";
+  	}
+  	else{
+  	  text = "No two named women.";
+  	}
+  	return(rating + "/3 Bechdel criteria: " + text);
   }
-  else if(rating == "2"){
-    text = "Includes at least two named women talking about a man.";
-  }
-  else if(rating == "1"){
-    text = "Includes at least two named women.";
-  }
-  else{
-    text = "No two named women.";
-  }
-
-  return(rating + "/3 Bechdel criteria: " + text);
 }
 
 function parseAndDisplayResult(responseText){
   // Parse results
   var bechdelTestResults = JSON.parse(responseText);
-
+	var URL = "";
+	
   // Check for Error Cases
   if (bechdelTestResults['status'] == "403") {
     // 403  This movie has not had an approved rating yet.
-  } else if (bechdelTestResults['status'] == "404") {
-    // 404  This movie has not been rated yet.
+    resultImage.setAttribute("src", chrome.extension.getURL("images/pending.png"));
+    URL = "http://bechdeltest.com/";	// Choice to make about the URL for this case 
   }
-
-  // Replace waiting icon with Pass or Fail
-  if (bechdelTestResults['rating'] == "3") {
-    resultImage.setAttribute("src", chrome.extension.getURL("images/success.png"));
-  } else {
-    resultImage.setAttribute("src", chrome.extension.getURL("images/fail.png"));
+  else if (bechdelTestResults['status'] == "404") {
+    // 404  This movie has not been rated yet.
+    resultImage.setAttribute("src", chrome.extension.getURL("images/not_rated.png"));
+    URL = "http://bechdeltest.com/add/";
+  }
+	else {
+		// Valid rating  ** does not check for dubious rating **
+  	// Replace waiting icon with Pass or Fail
+  	if (bechdelTestResults['rating'] == "3") {
+  	  resultImage.setAttribute("src", chrome.extension.getURL("images/success.png"));
+  	  URL = "http://bechdeltest.com/view/" + bechdelTestResults["id"]+ "/";
+  	} 
+  	else {
+  	  resultImage.setAttribute("src", chrome.extension.getURL("images/fail.png"));
+  	  URL = "http://bechdeltest.com/view/" + bechdelTestResults["id"]+ "/";
+  	}
   }
 
   resultImage.setAttribute("title", tooltipText(bechdelTestResults));
 
   bechdelTestMovieURL = document.createElement('a');
-  bechdelTestMovieURL.setAttribute("href", "http://bechdeltest.com/view/" + bechdelTestResults["id"]+ "/");
+  bechdelTestMovieURL.setAttribute("href", URL);
   bechdelTestMovieURL.setAttribute("target", "_new");
   bechdelTestRatingDiv.insertBefore(bechdelTestMovieURL);
 
